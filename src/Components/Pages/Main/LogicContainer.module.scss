@@ -1,0 +1,64 @@
+.main {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .burgerCard {
+    border: 1px solid black;
+    width: 50vw;
+    text-align: center;
+    z-index: 1;
+    background-color: #f3d9b1;
+    color: #2f3037;
+    box-shadow: 7px 7px rgba(255, 255, 255, 0.097);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .flexBox {
+      display: flex;
+      width: 100%;
+      position: relative;
+
+      form {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        /* align-content: center; */
+        justify-content: center;
+        width: 100%;
+        .burgerBun {
+          .bunControl {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+          }
+        }
+
+        .ingredients {
+          .ingredientsControl {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            .ingredient {
+              display: flex;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 1000px) {
+  .main {
+    .burgerCard {
+      width: 100vw;
+      height: 100vh;
+    }
+  }
+}
