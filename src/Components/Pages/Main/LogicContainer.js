@@ -121,7 +121,7 @@ const LogicContainer = () => {
             tomato={BurgerTomato}
             sauce={BurgerSauce}
           />
-          <form noValidate onSubmit={addOrder}>
+          <form noValidate onSubmit={addOrder} name="burgerForm">
             <div className={classes.burgerBun}>
               <Button
                 id="bunButton"
