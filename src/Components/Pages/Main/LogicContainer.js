@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { styled, alpha } from "@mui/material/styles";
 import Button from "@mui/material/Button";
@@ -14,15 +14,18 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 
 import classes from "./LogicContainer.module.scss";
 import Burger from "../../Burger/Burger";
+import { createClient } from "@supabase/supabase-js";
 
 const LogicContainer = () => {
+  const [supabaseClient, setSupabaseClient] = useState();
+  const [orders, setOrders] = useState([]);
+
   const [BurgerBun, setBurgerBun] = useState("Standard");
-  const [BurgerOnion, setBurgerOnion] = useState(true);
-  const [BurgerCheese, setBurgerCheese] = useState(true);
-  const [BurgerLettuce, setBurgerLettuce] = useState(true);
-  const [BurgerTomato, setBurgerTomato] = useState(true);
-  const [BurgerSauce, setBurgerSauce] = useState(true);
-  const id = parseInt(localStorage.getItem("id"));
+  const [BurgerOnion, setBurgerOnion] = useState(1);
+  const [BurgerCheese, setBurgerCheese] = useState(1);
+  const [BurgerLettuce, setBurgerLettuce] = useState(1);
+  const [BurgerTomato, setBurgerTomato] = useState(1);
+  const [BurgerSauce, setBurgerSauce] = useState(1);
 
   if (BurgerOnion > 4 && BurgerOnion !== 0) {
     setBurgerOnion(4);
@@ -40,21 +43,61 @@ const LogicContainer = () => {
     setBurgerSauce(4);
   }
 
-  const addOrder = () => {
-    axios
-      .post("http://sql11.freemysqlhosting.net:3306/orders/add", {
-        id: id,
-        Bun: BurgerBun,
-        Cheese: BurgerCheese,
-        Lettuce: BurgerLettuce,
-        Onion: BurgerOnion,
-        Tomato: BurgerTomato,
-        Sauce: BurgerSauce,
-      })
-      .then((response) => {});
+  useEffect(() => {
+    const newClient = createClient(
+      "https://xkvathcdcsqrsefwjhbe.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhrdmF0aGNkY3NxcnNlZndqaGJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDE3MDg5MTcsImV4cCI6MjAxNzI4NDkxN30.ivsLZkDCYJNUqjW3OXCnGE51D3-Dxl_W60ZlSrO5QYc"
+    );
+    setSupabaseClient(newClient);
+    newClient
+      .from("Orders")
+      .select("*")
+      .then((response) => setOrders(response.data));
+  }, []);
 
-    localStorage.setItem("id", id + 1);
-  };
+  // const addOrder = () => {
+  //   axios
+  //     .post("http://sql11.freemysqlhosting.net:3306/orders/add", {
+  //       id: id,
+  //       Bun: BurgerBun,
+  //       Cheese: BurgerCheese,
+  //       Lettuce: BurgerLettuce,
+  //       Onion: BurgerOnion,
+  //       Tomato: BurgerTomato,
+  //       Sauce: BurgerSauce,
+  //     })
+  //     .then((response) => {});
+
+  //   localStorage.setItem("id", id + 1);
+  // };
+
+  // const addOrder = async (Bun, Cheese, Lettuce, Onion, Tomato, Sauce) => {
+  //   const { data } = await supabaseClient
+  //     .from("Orders")
+  //     .insert({
+  //       Bun: Bun,
+  //       Cheese: Cheese,
+  //       Lettuce: Lettuce,
+  //       Onion: Onion,
+  //       Tomato: Tomato,
+  //       Sauce: Sauce,
+  //     })
+  //     .select();
+  //   setOrders([...orders, data[0]]);
+  // };
+
+  async function updateOrders() {
+    const updates = {
+      Bun: BurgerBun,
+      Cheese: BurgerCheese,
+      Lettuce: BurgerLettuce,
+      Onion: BurgerOnion,
+      Tomato: BurgerTomato,
+      Sauce: BurgerSauce,
+    };
+
+    const { error } = await supabaseClient.from("Orders").upsert(updates);
+  }
 
   const StyledMenu = styled((props) => (
     <Menu
@@ -121,7 +164,7 @@ const LogicContainer = () => {
             tomato={BurgerTomato}
             sauce={BurgerSauce}
           />
-          <form noValidate onSubmit={addOrder} name="burgerForm">
+          <form noValidate onSubmit={updateOrders} name="burgerForm">
             <div className={classes.burgerBun}>
               <Button
                 id="bunButton"
